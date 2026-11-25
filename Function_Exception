@@ -1,0 +1,57 @@
+#include <iostream>
+using namespace std;
+
+// Fungsi penarikan tunai ATM. Bisa melempar 2 jenis exception.
+void tarikTunai(int &saldo, int nominal) {
+    if (nominal <= 0) {
+        throw "Nominal penarikan harus lebih dari 0!";   // exception bertipe const char*
+    }
+    if (nominal % 50000 != 0) {
+        throw "Nominal harus kelipatan 50.000!";         // exception bertipe const char*
+    }
+    if (nominal > saldo) {
+        throw nominal - saldo;                           // exception bertipe int (kekurangan saldo)
+    }
+    saldo -= nominal;
+}
+
+int main() {
+    int saldo, nominal;
+
+    cout << "=== SIMULASI ATM ===" << endl;
+
+    // Input saldo awal dari user (juga divalidasi dengan exception)
+    try {
+        cout << "Masukkan saldo awal : Rp";
+        cin >> saldo;
+        if (cin.fail() || saldo < 0) {
+            throw "Saldo awal tidak valid!";
+        }
+    }
+    catch (const char* pesan) {
+        cout << "Error: " << pesan << endl;
+        return 1;
+    }
+
+    // Input nominal penarikan dari user
+    try {
+        cout << "Masukkan nominal tarik : Rp";
+        cin >> nominal;
+        if (cin.fail()) {
+            throw "Input harus berupa angka!";
+        }
+
+        tarikTunai(saldo, nominal);
+        cout << "Penarikan berhasil!" << endl;
+        cout << "Sisa saldo : Rp" << saldo << endl;
+    }
+    catch (const char* pesan) {
+        cout << "Error: " << pesan << endl;
+    }
+    catch (int kurang) {
+        cout << "Error: Saldo tidak cukup, kurang Rp" << kurang << endl;
+    }
+
+    cout << "Terima kasih telah menggunakan ATM." << endl;
+    return 0;
+}
